@@ -61,6 +61,7 @@ def main():
     parser.add_argument('--progmem',dest='progmem', default=False, action='store_true',help='C Variable declaration adds PROGMEM to character arrays. Useful to store the characters in porgram memory for AVR Microcontrollers with limited Flash or EEprom')
     parser.add_argument('-p','--print_ascii',dest='print_ascii', default=False, action='store_true',help='Print each character as ASCII Art on commandline, for debugging')
     parser.add_argument('--square', default=False, action='store_true',help='Make the font square instead of height by (height * 0.75)')
+    parser.add_argument('-fw','--font_width', default=None, help='Force set font-width of rendered font for specified font')
     args = parser.parse_args()
 
     if sys.platform == 'linux' and args.ttf_folder == "C:\\Windows\\Fonts\\":
@@ -154,10 +155,14 @@ def main():
 
                 # initialize PIL Image
                 height = font_heights[height_idx]
-                if args.square:
-                    width = height
+
+                if args.font_width is not None:
+                    width = int(args.font_width)
                 else:
-                    width = int(height * 0.75)
+                    if args.square:
+                        width = height
+                    else:
+                        width = int(height * 0.75)
                 if args.offset is not None:
                     yoffset = args.offset
                 else:
@@ -340,7 +345,7 @@ def calculate_char_width(image, width, height):
 # Read character file
 def read_character_file(char_filename):
     chars = []
-    char_file = open(char_filename,'r')
+    char_file = open(char_filename,'r', encoding="utf-8")
     character_line = char_file.read().replace("\n", "")
     [chars.append(x) for x in character_line if x not in chars]
     character_line = "".join(chars)
