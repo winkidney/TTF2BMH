@@ -434,21 +434,32 @@ def logfile_close(log_file):
     log_file.write('====================================================================\n')
     log_file.close()
 
-#---------------------------------------------------------------------------------------
-# print pixel array as ASCII Art
-def print_char(image, height, char_width, x_offset):
+
+def format_char(image, height, char_width, x_offset):
     dot_threshold = 128
+    ascii_bmps = []
     for y_s in range(height):
         ascii_bmp = ''
         for x_s in range(char_width):
-            bmf_s = image.getpixel(((x_s+x_offset), y_s))
+            bmf_s = image.getpixel(((x_s + x_offset), y_s))
             if (bmf_s < dot_threshold):
                 ascii_bmp = ascii_bmp + '#'
             else:
                 ascii_bmp = ascii_bmp + '.'
+        ascii_bmps.append(ascii_bmp)
+    return ascii_bmps
+
+
+#---------------------------------------------------------------------------------------
+# print pixel array as ASCII Art
+def print_char(image, height, char_width, x_offset):
+    ascii_bmps = format_char(image, height, char_width, x_offset)
+    for ascii_bmp in ascii_bmps:
         print(ascii_bmp)
     print(' ')
     return 0
+
+
 #---------------------------------------------------------------------------------------
 # Main function handler
 
