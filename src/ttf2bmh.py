@@ -60,6 +60,7 @@ def main():
     parser.add_argument('-y','--y_offset', help='Define starting offset of character. Only meaningful if specific fontsize is rendered.')
     parser.add_argument('--progmem',dest='progmem', default=False, action='store_true',help='C Variable declaration adds PROGMEM to character arrays. Useful to store the characters in porgram memory for AVR Microcontrollers with limited Flash or EEprom')
     parser.add_argument('-p','--print_ascii',dest='print_ascii', default=False, action='store_true',help='Print each character as ASCII Art on commandline, for debugging')
+    parser.add_argument('--print_binary',dest='print_binary', default=False, action='store_true',help='Print each character as binary array on commandline, for debugging')
     parser.add_argument('--square', default=False, action='store_true',help='Make the font square instead of height by (height * 0.75)')
     parser.add_argument('-fw','--font_width', default=None, help='Force set font-width of rendered font for specified font')
     args = parser.parse_args()
@@ -208,6 +209,9 @@ def main():
                     if(print_ascii):
                         print(char + ":")
                         print_char(image, height, char_width, x_offset)
+                    if args.print_binary:
+                        from pprint import pprint
+                        pprint(get_binary_str_array(dot_array, height))
 
                 # write tail and close bmh file
                 write_bmh_tail(outfile, width_array, character_line)
@@ -290,6 +294,27 @@ def write_pic_file(character_line, PILfont, width, height, png_filename):
     image_pic.save(png_filename)
 
     return 0
+
+
+def rotate_2d_array(arr, degrees):
+    if degrees == 90:
+        new_array = list(zip(*arr[::-1]))
+    elif degrees == 180:
+        new_array = [row[::-1] for row in arr[::-1]]
+    elif degrees == 270:
+        new_array = list(zip(*arr))[::-1]
+    else:
+        raise ValueError("Invalid degrees. Degrees should be 90, 180, or 270.")
+    return new_array
+
+
+def get_binary_str_array(dot_array, line_width):
+    lines = []
+    template = "{" + f"0:0{line_width}b" + "}"
+    for line in dot_array:
+        binary_str = template.format(int(line))
+        lines.append(list(binary_str))
+    return lines
 
 #---------------------------------------------------------------------------------------
 # Calculate full pixels from image
