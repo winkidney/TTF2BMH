@@ -297,7 +297,9 @@ def write_pic_file(character_line, PILfont, width, height, png_filename):
 
 
 def rotate_2d_array(arr, degrees):
-    if degrees == 90:
+    if degrees == 0:
+        new_array = arr
+    elif degrees == 90:
         new_array = list(zip(*arr[::-1]))
     elif degrees == 180:
         new_array = [row[::-1] for row in arr[::-1]]
@@ -315,6 +317,17 @@ def get_binary_str_array(dot_array, line_width):
         binary_str = template.format(int(line))
         lines.append(list(binary_str))
     return lines
+
+
+def rotate_then_print_ascii_array(dot_array, line_width):
+    arr = get_binary_str_array(dot_array, line_width)
+    rotated = rotate_2d_array(arr, 270)
+    for line in rotated:
+        line = "".join(line)
+        line = line.replace("0", ".")
+        line = line.replace("1", "#")
+        print(line)
+
 
 #---------------------------------------------------------------------------------------
 # Calculate full pixels from image
